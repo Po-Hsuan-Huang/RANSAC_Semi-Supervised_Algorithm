@@ -4,7 +4,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### What is this repository for? ###
 
-* Quick summary
+* The scripts are the finalized version of RANSAC algorithms. RANSAC version 1 is the one that use the sequential generalization. RANSAC version 2 is the one that use the parallel generalization(bagging), RANSAC version 3 is similar to RANSAC version 2 but use ANNs as base classifiers.
 * Version
 * [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
