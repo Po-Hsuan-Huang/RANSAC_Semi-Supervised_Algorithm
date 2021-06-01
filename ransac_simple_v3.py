@@ -78,10 +78,6 @@ def max_proba_pool(X, preds):
         X : numpy array [ sample_size, np.shape(sample) ] ; the traing data
         preds : numpy array [ num_estimator, sample_size, num_class,] ; the probability prediciton of each class of each training data
     """
-    
-    
-    print('max_praba_pool_preds_shape' , np.asarray(preds).shape)
-    
     preds = np.mean(np.asarray(preds), axis = 0 ) # mean scores of each class of each data 
     thres = 0.7
     
@@ -107,15 +103,12 @@ def majority_vote(X, preds, num_voters):
                
     return : Vector. Mode of the predicion of each samples
     """
-    
         
     majority_votes_count = []
     
     majority_votes = []
     
-    preds = np.asarray(preds)
-    
-    for n in range(preds.shape[1]) : # for each sample
+    for n in range(len(preds[0])) : # for each sample
         
         cl , cnts = np.unique(preds[:,n], return_counts= True) # majority vote of estimators
 
@@ -198,13 +191,11 @@ class RANSAC(object):
     unlablled data set X.
     """
     
-    def __init__(self, estimator, n=10, mode = 'unanimous_consensus'):
-        
-        self.mode = mode
+    def __init__(self, estimator, n=10):
         
         self.num_estimators = n
         
-        self.num_iter = 10
+        self.num_iter = 500
         
         self.num_inner_epochs = 0
         
@@ -225,7 +216,7 @@ class RANSAC(object):
         for i in range(self.num_estimators) :
             x, y = sample_gen(Xtrain,Ytrain)
             
-#            print( 'sample set  class 1: {}, class 2: {}'.format(np.sum(y ==-1), np.sum(y==1)))
+            print( 'sample set  class 1: {}, class 2: {}'.format(np.sum(y ==-1), np.sum(y==1)))
 
             
             if len(self.estimators) < self.num_estimators :
@@ -233,32 +224,30 @@ class RANSAC(object):
                 self.estimators.append(deepcopy(self.estimator))
                 
             elif len(self.estimators) == self.num_estimators :
-                try:
-                    self.estimators[i].fit(x,y.ravel())
-                except ValueError :
-                    print('number of classes has to be greater than one; got one class.')
-                    continue
-                
-    def _predict(self, X) :
+
+
+                self.estimators[i].fit(x,y.ravel())
+    
+    def _predict(self, X, mode = 'unamimous_consnsesus') :
         """ predict on unlabled data with estmators
         """
         # Consensus Phase
         preds = []
-        if self.mode =='unamimous_consnsesus' :
+        if mode =='unamimous_consnsesus' :
             for i in range(self.num_estimators):
                 estimator = self.estimators[i]
                 preds.append(estimator.predict(X))
             
             return unanimus_consensus(X, preds)
         
-        elif self.mode == 'max_count_pool' :
+        elif mode == 'max_count_pool' :
             for i in range(self.num_estimators):
                 estimator = self.estimators[i]
                 preds.append(estimator.predict(X))
             
-            return max_count_pool(X, preds, self.num_estimators)
+            return max_count_pool(X, preds)
         
-        elif self.mode == 'max_proba_pool' :
+        elif mode == 'max_proba_pool' :
             for i in range(self.num_estimators):
                 estimator = self.estimators[i]
                 preds.append(estimator.predict_proba(X))
@@ -267,9 +256,6 @@ class RANSAC(object):
         
     def _distill(self, X, y, mode = 'controversial'):
         " return distilled X,y "
-        
-        assert X.size != 0, print('Cannot distill empty array in self._distill() X.shape : ', X.shape)
-        
         preds = []
         if mode =='controversial' :
             for i in range(self.num_estimators):
@@ -360,8 +346,7 @@ class RANSAC(object):
         x_pred, y_pred = self.predict_pass(X)
         
         X_in, y_in = self.Xtrain_epoch, self.Ytrain_epoch
-        
-        print('inside iteration Xtrain size', X_in.shape)
+
         
         for v in range(2):
             self.fit(X_in, y_in)
@@ -382,9 +367,8 @@ class RANSAC(object):
         preds = []
         for i in range(self.num_estimators):
             estimator = self.estimators[i]
-            print('base_est_pred_proba', estimator.predict_proba(X)[..., 1:].shape)
-            preds.append(estimator.predict_proba(X)[..., 1:]) # only return probabilties of class [0,1]
-        
+            preds.append(estimator.predict_proba(X))
+            
         preds = np.mean(np.asarray(preds), axis = 0 )
         
         return preds
@@ -469,8 +453,8 @@ if __name__ == '__main__' :
         y_train_gt = deepcopy(y_train)    
         y_train, noise_indices, noise_percent = add_noise(y_train)
         
-#        est =SVC(gamma='auto', C=1, probability =True)
-        est = MLPClassifier(hidden_layer_sizes=(2,10,10,2), solver='lbfgs' )
+        est =SVC(gamma='auto', C=1, probability =True)
+        # est = MLPClassifier(hidden_layer_sizes=(2,10,10,2), solver='lbfgs' )
         
         est.fit(X_train, y_train_gt)
         score_clean = est.score(X_test, y_test)
@@ -482,11 +466,11 @@ if __name__ == '__main__' :
         rac.fit(X_train, y_train)
         
         # predict() classification
-#        x_pred, y_pred = rac.predict(X_test)
-#        
-#        ind1, ind2 = intersect_id(X_test, x_pred)
-#            
-#        score_denoise = accuracy_score(y_test[ind1].ravel(),y_pred.ravel())
+        x_pred, y_pred = rac.predict(X_test)
+        
+        ind1, ind2 = intersect_id(X_test, x_pred)
+            
+        score_denoise = accuracy_score(y_test[ind1].ravel(),y_pred.ravel())
         
         # probability prediction
         
@@ -536,14 +520,14 @@ if __name__ == '__main__' :
             ax.set_title("prediction")
             
 ##         non-concensus    
-#        X_no = setdiff(X_test, x_pred)
-#        ax.scatter(X_no[:,0], X_no[:,1], facecolors =None, cmap=cm_bright,
-#               edgecolors='k',alpha = 0.2)
-#        
+        X_no = setdiff(X_test, x_pred)
+        ax.scatter(X_no[:,0], X_no[:,1], facecolors =None, cmap=cm_bright,
+              edgecolors='k',alpha = 0.2)
+        
 ##         concensus    
-#        ax.scatter(x_pred[:, 0], x_pred[:, 1], c = y_pred.ravel()  ,cmap=cm_bright,
-#               edgecolors='k',alpha = 0.2)
-#        
+        ax.scatter(x_pred[:, 0], x_pred[:, 1], c = y_pred.ravel()  ,cmap=cm_bright,
+              edgecolors='k',alpha = 0.2)
+        
         # plot probability prediction
         
         ax.scatter(X_test[:, 0], X_test[:, 1], c = np.argmax(preds, axis =1).ravel()  ,cmap=cm_bright,
@@ -559,7 +543,8 @@ if __name__ == '__main__' :
         size=15, horizontalalignment='right')
         
         i+=1
-            
+#%%            
+    figure.savefig('/home/pohsuanh/Documents/Itti Lab/SEMISUPERVISED_LABELING/RANSAC_exp/2d_toy_examples_visualization.eps' )
         
 
 

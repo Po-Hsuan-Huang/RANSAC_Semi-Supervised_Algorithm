@@ -33,7 +33,7 @@ from sklearn.model_selection import train_test_split
 
 def sample_gen( X, Y):
         
-        rate = 0.9
+        rate = 0.5
 
         num_totoal = len(X)
 
@@ -46,6 +46,22 @@ def sample_gen( X, Y):
         return X[sample_ids], Y[sample_ids]
     
 def intersect_id(a,b): 
+    """
+    Returns
+
+    intersect1d  ndarray
+
+        Sorted 1D array of common and unique elements.
+    
+    comm1  ndarray
+
+        The indices of the first occurrences of the common values in ar1. Only provided if return_indices is True.
+    
+    comm2  ndarray
+
+        The indices of the first occurrences of the common values in ar2. Only provided if return_indices is True.
+    
+    """
     
     a1_rows = a.view([('', a.dtype)] * a.shape[1])
     a2_rows = b.view([('', b.dtype)] * b.shape[1])
@@ -173,13 +189,13 @@ class RANSAC(object):
     unlablled data set X.
     """
     
-    def __init__(self, estimator, n=10):
+    def __init__(self, estimator, n = 10):
         
         self.num_estimators = n
         
-        self.num_iter = 500
+        self.num_iter = 50
         
-        self.num_inner_epochs = 0
+        self.num_inner_epochs = 1
         
         self.num_outer_epochs = 0
         
@@ -287,12 +303,12 @@ class RANSAC(object):
         
             return X, y
         
-        for in range( self.num_outer_epochs):
+        for _ in range( self.num_outer_epochs):
 
             X_in = np.concatenate((self.Xtrain_init, X), axis = 0)
             y_in = np.concatenate((self.Ytrain_init, y), axis = 0)
             
-            for k in range(self.num_epochs): # unlabel the mislabelled data in training set.
+            for k in range(self.num_inner_epochs): # unlabel the mislabelled data in training set.
     
                 X_train, X_test, y_train, y_test = train_test_split(X_in, y_in, test_size= 0.1)
                 
@@ -304,7 +320,13 @@ class RANSAC(object):
             
     def predict_proba(self, X):
         
+        # try:
+                    
         X_, y_  = self.predict(X)
+            
+        # except TypeError:
+            
+        #     print('X is', X)
         
         preds = []
         for i in range(self.num_estimators):

@@ -70,18 +70,19 @@ class RANSAC(object):
             x, y = sample_gen(Xtrain,Ytrain)
             self.estimator.fit(x,y.ravel())
             self.estimators.append(deepcopy(self.estimator))
+            # print('num_estimators {:d}'.format(len(self.estimators)))
     
     def _predict(self, X) :
         """ predict on unlabled data with estmators
         """
-        print('_predict: ',X.shape[0])
+        # print('_predict: ',X.shape[0])
         # Consensus Phase
         preds = []
         for i in range(self.num_estimators):
             estimator = self.estimators[i]
             pred = estimator.predict(X)
             preds.append(pred)
-        print('done predict')
+        # print('done predict')
         x_consensus = []
         y_consensus = []
         preds = np.asarray(preds)
@@ -117,7 +118,7 @@ class RANSAC(object):
                 self.Xtrain_epoch = np.concatenate((self.Xtrain_epoch, x), axis = 0)   # update training set
                 self.Ytrain_epoch = np.concatenate((self.Ytrain_epoch, y), axis = 0)
                 self.X_epoch = setdiff(self.X_epoch,x)       #update unlabeled set
-#                print('size of x epoch', self.X_epoch,shape)
+                # print('size of x epoch', self.X_epoch)
                 
             if len(self.X_epoch) == 0:
                 break
@@ -125,8 +126,10 @@ class RANSAC(object):
         return self.Xtrain_epoch[len(self.Xtrain_init):], self.Ytrain_epoch[len(self.Ytrain_init):]  
                 
     def predict_proba(self, X):
-                
-        X_, y_  = self.predict(X)
+        
+        print('X.shape',X.shape[0])
+        
+#        X_, y_  = self.predict(X)
         
         preds = []
         for i in range(self.num_estimators):
@@ -229,16 +232,16 @@ if __name__ == '__main__' :
         rac.fit(X_train, y_train)
         
         # predict() classification
-        x_pred, y_pred = rac.predict(X_test)
-        ind1, ind2 = intersect_id(X_test, x_pred)
-            
-        score_denoise = accuracy_score(y_test[ind1].ravel(),y_pred.ravel())
+#        x_pred, y_pred = rac.predict(X_test)
+#        ind1, ind2 = intersect_id(X_test, x_pred)
+#            
+#        score_denoise = accuracy_score(y_test[ind1].ravel(),y_pred.ravel())
         
         # probability prediction
         
         preds = rac.predict_proba(X_test)
                 
-        score_denoise = accuracy_score(y_test.ravel(), np.argmax(preds, axis = 1).ravel())
+        score_denoise = accuracy_score(Y_val.ravel(), np.argmax(preds, axis = 1).ravel())
         
         h = .02
         x_min, x_max = X[:, 0].min() - .5, X[:, 0].max() + .5
