@@ -1,7 +1,7 @@
 ## RANSAC(Random Sample Concensus) inspired semi-supervised algoirthm.   ##
 
 ### Motivation ###
-Acquiring high-quality label is one of the most critical bottle-neck of machine learning. It is time-cosuming and costly to obtain accurate, exact, and sufficient amount of labels. Sometimes, we have to make do with a lot of noisy labels with a handleful of "ground-truths." Semi-supervised learning aims at dealing with this category of problem by utilizing unlabeled data into training under the premise that there's a data manifold under the large amount of unlabeled data to levergage. We proposed two algorithms that utilize the concept of random sampling and self-training to enhance the prowness of our models. The algorithms are robust to most semi-supervised learning tasks even the ground-truths are as few as ten.   
+Acquiring high-quality labels is one of the most critical bottlenecks in machine learning. It is time-consuming and costly to obtain accurate, precise, and a sufficient amount of labels. Sometimes, we have to make do with a lot of noisy labels with a handful of "ground truths." Semi-supervised learning aims to deal with this category of problems by utilizing unlabeled data in training under the premise that there's a data manifold underlying the large amount of unlabeled data to leverage. We propose two algorithms that utilize the concept of random sampling and self-training to enhance the prowess of our models. The algorithms are robust to most semi-supervised learning tasks, even when the ground truths are as few as ten.
 
 
 ###Introductions to Algoirhtms
