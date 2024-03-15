@@ -43,8 +43,9 @@ Improvements:
 
 ### Algorithm 2: RANSAC2 ###
 
+<img src="imgs/algo2_diagram.png" alt="Example Algorithm" width="500"/>
 
-<figure>
+
 <img src="imgs/algo2.png" alt="Example Algorithm" width="500"/>
 	
 Fig.4 - RANSAC Algorithm 2:
