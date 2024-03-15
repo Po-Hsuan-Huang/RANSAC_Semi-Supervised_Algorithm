@@ -48,8 +48,6 @@ Improvements:
 
 <img src="imgs/algo2.png" alt="Example Algorithm" width="500"/>
 	
-Fig.4 - RANSAC Algorithm 2:
-
 Step 1: RANSAC2 combines bagging and active learning. Initially N base classifiers were trainined separately with irreplacable random samples from the training data. The rest of training data are considered unlableld.
 
 Step 2: Then the base classifiers use 'bagging' to generate concensus as pseudo labels.
@@ -95,3 +93,40 @@ Improvements :Improvements :[Version4](docs/ransac_simple_ssl_v3.md)
 Ransac Simple Algorithm2 (fork from ransac_simple.py)
 
 RANSAC semisupervised learning utilizing unlabeled data.
+
+## Getting Started
+Make sure you have python3, numpy, and scikit-learn packages installed.
+
+## Usage
+Clone and use either of the .py script above to port to your binary classification tasks.
+
+The labeled data are annotated as 0, 1,
+
+The unlabled data are annotated as -1
+
+You can swap the base classifiers among SVM, KNN, or Multi-layer Perceptron
+
+## Contributing
+
+We welcome contributions from the community! If you'd like to contribute to this project, please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them with clear and concise commit messages.
+4. Push your changes to your fork.
+5. Open a pull request against the main repository with a description of your changes.
+6. Wait for a maintainer to review your pull request and provide feedback.
+
+For more details on how to contribute, please see our [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). This means you are free to use, modify, and distribute the project, provided you include the original license and copyright notice in any copies or substantial portions of the software.
+
+For more details, see the [LICENSE](LICENSE) file.
+
+## Contact
+
+If you have any questions or feedback, feel free to reach out to us:
+
+- [Po-Hsuan Huang](mailto:pohsuanh@usc.edu)
